@@ -7,6 +7,7 @@ import (
 	"github.com/aobco/log"
 	uuid2 "github.com/google/uuid"
 	"github.com/vjeantet/grok"
+	"go.uber.org/atomic"
 	"net/smtp"
 	"os/exec"
 	"path/filepath"
@@ -22,10 +23,55 @@ import (
 type status string
 
 func main() {
+	size := 10
+	elapse := 3.1
+	sizeKb := float64(size) / 1024
+	speed := sizeKb / elapse
+	log.Infof("sizeKb: %f, elapse: %f, speed: %f", sizeKb, elapse, speed)
+}
+
+func addUseAtomic(totalCount int64) {
 	now := time.Now()
-	nowTrim := now.Truncate(time.Hour)
-	fmt.Println("now:", now)
-	fmt.Println("nowTrim:", nowTrim)
+	atomicInt := atomic.NewInt64(0)
+	waitGroup := &sync.WaitGroup{}
+	for i := 0; i < 100; i++ {
+		waitGroup.Add(1)
+		go func(wg *sync.WaitGroup) {
+			defer wg.Done()
+			for {
+				if atomicInt.Load() > totalCount {
+					return
+				}
+				atomicInt.Add(1)
+			}
+		}(waitGroup)
+	}
+	waitGroup.Wait()
+	log.Infof("totalCount: %d, elapse: %d", atomicInt.Load(), time.Since(now).Milliseconds())
+}
+
+func addUseLock(count int64) {
+	now := time.Now()
+	totalCount := int64(0)
+	waitGroup := &sync.WaitGroup{}
+	lock := &sync.Mutex{}
+	for i := 0; i < 100; i++ {
+		waitGroup.Add(1)
+		go func(l *sync.Mutex, wg *sync.WaitGroup) {
+			defer wg.Done()
+			for {
+				l.Lock()
+				if totalCount > count {
+					l.Unlock()
+					return
+				}
+				totalCount++
+				l.Unlock()
+			}
+		}(lock, waitGroup)
+	}
+	waitGroup.Wait()
+	log.Infof("totalCount: %d, elapse: %d", totalCount, time.Since(now).Milliseconds())
 }
 
 func IsSubPath(dir, file string) bool {

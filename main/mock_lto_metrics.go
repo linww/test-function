@@ -53,14 +53,14 @@ func main() {
 	}()
 	for {
 		totalCount += 1
-		if totalCount > 12345 {
+		if totalCount > 123450 {
 			break
 		}
 		rand.Seed(time.Now().UnixMilli())
 		datasourceId := int64(100265)
 		archivePlanId := int64(100008)
 		indicatorValue := rand.Int63n(11) + 190
-		subtractMin := rand.Int63n(2 * 24 * 60)
+		subtractMin := rand.Int63n(7 * 24 * 60)
 		record := &metrics.LtoMetricsRecord{
 			DatasourceId:   datasourceId,
 			ArchivePlanId:  archivePlanId,

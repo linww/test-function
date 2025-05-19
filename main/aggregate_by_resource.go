@@ -6,6 +6,8 @@ import (
 	"github.com/aobco/log"
 	"io"
 	"os"
+	"time"
+	"xsky.com/ocpf/pkg/constant"
 )
 
 func main() {
@@ -23,24 +25,25 @@ func main() {
 		panic(err)
 	}
 	total := int64(0)
-	//for _, d := range datas {
-	//	if d.Time >= 1744214400000 && d.Time < 1744250400000 {
-	//		for _, a := range d.Agents {
-	//			if a.AgentID != 100144 {
-	//				continue
-	//			}
-	//			total += a.TotalCount
-	//			m := fmt.Sprintf("%d %s %s %d", d.Time, d.TimeDisplay, a.AgentName, a.TotalCount)
-	//			fmt.Println(m)
-	//		}
-	//	}
-	//}
 	for _, d := range datas {
-		if d.Time >= 1744128000000 && d.Time < 1744264800000 {
-			total += d.TotalCount
-			fmt.Println(fmt.Sprintf("%s %s %d", d.ResourceName, d.TimeDisplay, d.TotalCount))
+		if d.Time >= 1746360000000 && d.Time < 1746403200000 {
+			for _, a := range d.Agents {
+				if a.AgentID != 100067 {
+					continue
+				}
+				total += a.TotalCount
+				localTime, _ := time.ParseInLocation(constant.EsDefaultGoDateFormat, d.TimeDisplay, time.UTC)
+				m := fmt.Sprintf("%d %s %s %d", d.Time, localTime.Local(), a.AgentName, a.TotalCount)
+				fmt.Println(m)
+			}
 		}
 	}
+	//for _, d := range datas {
+	//	if d.Time >= 1746360000000 && d.Time < 1746403200000 {
+	//		total += d.TotalCount
+	//		fmt.Println(fmt.Sprintf("%s %s %d", d.ResourceName, d.TimeDisplay, d.TotalCount))
+	//	}
+	//}
 	fmt.Println("total:", total)
 }
 

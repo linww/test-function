@@ -32,8 +32,8 @@ func main() {
 	//}
 	//log.Infof("put object successfully")
 
-	//client := service.OsgRequestService.GetS3Client("99999999999999999999", "9999999999999999999999999999999999999999", "http://10.16.13.137:8060")
-	client := service.OsgRequestService.GetS3Client("11111111111111111111", "1111111111111111111111111111111111111111", "http://10.16.12.135:8060")
+	client := service.OsgRequestService.GetS3Client("99999999999999999999", "9999999999999999999999999999999999999999", "http://10.16.13.137:8060")
+	//client := service.OsgRequestService.GetS3Client("11111111111111111111", "1111111111111111111111111111111111111111", "http://10.16.12.135:8060")
 	putTotal := atomic.NewInt64(0)
 	wg := &sync.WaitGroup{}
 	for i := 0; i < 50; i++ {
@@ -42,7 +42,7 @@ func main() {
 			defer wg.Done()
 			for {
 				current := putTotal.Inc()
-				if current > 50000 {
+				if current > 100000 {
 					break
 				}
 				//current = current + 10000000

@@ -2,16 +2,17 @@ package main
 
 import (
 	"fmt"
-	"github.com/aobco/log"
 	"xsky.com/ocpf/pkg/error/biz_error"
 	"xsky.com/ocpf/pkg/error/xerr"
 )
 
 func main() {
-
-	bizErr := fmt.Errorf("test error")
-	trace := xerr.Trace(bizErr)
-	log.Errorf("%+v", trace)
+	err := fmt.Errorf("this is a test error")
+	bizErr := xerr.BizWrap(err, biz_error.InternalError, "test error")
+	_, _, msg := xerr.ParseBizError(bizErr)
+	fmt.Println(msg)
+	//traceErr := trace()
+	//log.Warnf("%v", traceErr)
 	//trace4 := getTrace4()
 	//log.Errorf("%+v", trace4)
 	//println("=====================================================================")
@@ -25,6 +26,10 @@ func main() {
 	//httpStatus, code, msg := xerr.ParseBizError(err)
 	//println("=====================================================================")
 	//log.Infof("httpStatus: %d, code: %s, msg: %s", httpStatus, code, msg)
+}
+
+func trace() error {
+	return xerr.New("test error")
 }
 
 func getTrace4() error {
